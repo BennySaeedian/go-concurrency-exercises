@@ -25,7 +25,7 @@ type Stream struct {
 }
 
 // ErrEOF returns on End of File error
-var ErrEOF = errors.New("End of File")
+var ErrEOF = errors.New("end of file")
 
 // Next returns the next Tweet in the stream, returns EOF error if
 // there are no more tweets
