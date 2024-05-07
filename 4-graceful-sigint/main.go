@@ -13,10 +13,28 @@
 
 package main
 
+import (
+	"os"
+	"os/signal"
+	"syscall"
+)
+
 func main() {
 	// Create a process
 	proc := MockProcess{}
-
-	// Run the process (blocking)
-	proc.Run()
+	// we create a buffered channel of OS signals
+	signals := make(chan os.Signal, 1)
+	// register the signals channel to listen to SIGINT (Ctrl-C)
+	signal.Notify(signals, syscall.SIGINT)
+	// run the process concurrently
+	go func() {
+		proc.Run()
+	}()
+	// wait for a signal
+	<-signals
+	// try to stop the program gracefully, in another concurrent goroutine
+	go proc.Stop()
+	// wait on the 2nd signal
+	<-signals
+	os.Exit(1)
 }
